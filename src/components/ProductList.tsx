@@ -26,6 +26,7 @@ const benzPackagingProducts: Product[] = [
     description: 'Our Bubble Wrap Pouch Making Machine is designed for high-speed production of bubble wrap pouches with precise dimensions. Features adjustable settings for different pouch sizes and automatic sealing.',
     categories: ['cat_1'],
     isActive: true,
+    hasVariants: true,
     images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XT/UJ/AY/3682004/bubble-wrap-pouch-making-machine.jpg'],
     createdAt: new Date('2023-01-15'),
     updatedAt: new Date('2023-01-15')
@@ -39,6 +40,7 @@ const benzPackagingProducts: Product[] = [
     description: 'Industrial-grade Air Bubble Film Making Machine capable of producing bubble wrap sheets in various sizes and bubble configurations. Energy-efficient with digital control system.',
     categories: ['cat_1'],
     isActive: true,
+    hasVariants: true,
     images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/PB/ME/BQ/3682004/air-bubble-film-making-machine.jpg'],
     createdAt: new Date('2023-02-10'),
     updatedAt: new Date('2023-02-10')
@@ -52,6 +54,7 @@ const benzPackagingProducts: Product[] = [
     description: 'This machine converts EPS waste into recyclable products. Features automatic feeding system, precise temperature control, and energy-saving operation.',
     categories: ['cat_1'],
     isActive: true,
+    hasVariants: true,
     images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/JX/JO/KD/3682004/eps-thermocol-disposal-glass-making-machine.jpg'],
     createdAt: new Date('2023-03-05'),
     updatedAt: new Date('2023-03-05')
@@ -65,6 +68,7 @@ const benzPackagingProducts: Product[] = [
     description: 'Our Stretch Film Making Machine produces high-quality stretch wrap films for industrial packaging. Features adjustable thickness control, multi-layer extrusion, and automatic winding system.',
     categories: ['cat_2'],
     isActive: true,
+    hasVariants: true,
     images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/LT/KF/IY/3682004/stretch-film-making-machine.jpg'],
     createdAt: new Date('2023-04-20'),
     updatedAt: new Date('2023-04-20')
@@ -78,6 +82,7 @@ const benzPackagingProducts: Product[] = [
     description: 'High-quality bubble wrap rolls for secure packaging. Available in various sizes and bubble dimensions. Excellent cushioning properties for fragile item protection.',
     categories: ['cat_2'],
     isActive: true,
+    hasVariants: true,
     images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/FD/CE/WQ/3682004/bubble-wrap-roll-500x500.jpg'],
     createdAt: new Date('2023-05-15'),
     updatedAt: new Date('2023-05-15')
@@ -91,6 +96,7 @@ const benzPackagingProducts: Product[] = [
     description: 'Lightweight EPE foam rolls offering superior protection against shock, vibration, and impact damage. Water-resistant and recyclable material.',
     categories: ['cat_2'],
     isActive: true,
+    hasVariants: true,
     images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/RE/GO/CW/3682004/epe-foam-roll-500x500.jpg'],
     createdAt: new Date('2023-06-10'),
     updatedAt: new Date('2023-06-10')
@@ -104,6 +110,7 @@ const benzPackagingProducts: Product[] = [
     description: 'Automatic paper cup making machine capable of producing 45-50 cups per minute. Features precise sealing system, PLC control, and photocell detection for accurate cup formation.',
     categories: ['cat_1'],
     isActive: true,
+    hasVariants: true,
     images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XA/WT/HI/3682004/paper-cup-making-machine.jpg'],
     createdAt: new Date('2023-07-05'),
     updatedAt: new Date('2023-07-05')
@@ -117,6 +124,7 @@ const benzPackagingProducts: Product[] = [
     description: 'Premium quality air bubble film offering superior protection for fragile items during storage and transportation. Available in various sizes and bubble configurations.',
     categories: ['cat_2'],
     isActive: true,
+    hasVariants: true,
     images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/BW/DC/OA/3682004/bubble-wrap-pouches-1000x1000.jpg'],
     createdAt: new Date('2023-08-15'),
     updatedAt: new Date('2023-08-15')
