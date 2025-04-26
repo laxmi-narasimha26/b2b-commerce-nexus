@@ -90,6 +90,7 @@ export interface Product extends BaseEntity {
   brandId?: string;
   attributes?: Record<string, any>;
   categories?: string[]; // Category IDs
+  images?: string[]; // Added images property to store image URLs
 }
 
 export interface ProductVariant extends BaseEntity {
