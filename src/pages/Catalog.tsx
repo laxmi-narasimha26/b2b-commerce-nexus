@@ -9,7 +9,15 @@ const Catalog: React.FC = () => {
       <Navigation />
       
       <main className="nexus-container py-8">
-        <h1 className="nexus-page-title">Product Catalog</h1>
+        <div className="mb-6">
+          <h1 className="nexus-page-title">Benz Packaging Solutions</h1>
+          <p className="text-gray-600 mt-2">
+            Browse our comprehensive range of packaging machines and materials. 
+            From bubble wrap machines to protective packaging materials, we offer 
+            high-quality solutions for all your industrial packaging needs.
+          </p>
+        </div>
+        
         <ProductList />
       </main>
     </div>

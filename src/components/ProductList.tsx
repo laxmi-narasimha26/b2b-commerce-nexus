@@ -15,6 +15,238 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+// Mock data for Benz Packaging Solutions products
+const benzPackagingProducts: Product[] = [
+  {
+    id: 'prod_1',
+    sku: 'BP-BW-001',
+    name: 'Bubble Wrap Pouch Making Machine',
+    slug: 'bubble-wrap-pouch-making-machine',
+    shortDescription: 'Automatic Bubble Wrap Pouch Making Machine',
+    description: 'Our Bubble Wrap Pouch Making Machine is designed for high-speed production of bubble wrap pouches with precise dimensions. Features adjustable settings for different pouch sizes and automatic sealing.',
+    categories: ['cat_1'],
+    isActive: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XT/UJ/AY/3682004/bubble-wrap-pouch-making-machine.jpg'],
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2023-01-15')
+  },
+  {
+    id: 'prod_2',
+    sku: 'BP-APM-002',
+    name: 'Air Bubble Film Making Machine',
+    slug: 'air-bubble-film-making-machine',
+    shortDescription: 'Heavy-duty Air Bubble Film Production Equipment',
+    description: 'Industrial-grade Air Bubble Film Making Machine capable of producing bubble wrap sheets in various sizes and bubble configurations. Energy-efficient with digital control system.',
+    categories: ['cat_1'],
+    isActive: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/PB/ME/BQ/3682004/air-bubble-film-making-machine.jpg'],
+    createdAt: new Date('2023-02-10'),
+    updatedAt: new Date('2023-02-10')
+  },
+  {
+    id: 'prod_3',
+    sku: 'BP-EPS-003',
+    name: 'EPS Thermocol Disposal Glass Making Machine',
+    slug: 'eps-thermocol-disposal-glass-making-machine',
+    shortDescription: 'Eco-friendly Thermocol Processing Equipment',
+    description: 'This machine converts EPS waste into recyclable products. Features automatic feeding system, precise temperature control, and energy-saving operation.',
+    categories: ['cat_1'],
+    isActive: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/JX/JO/KD/3682004/eps-thermocol-disposal-glass-making-machine.jpg'],
+    createdAt: new Date('2023-03-05'),
+    updatedAt: new Date('2023-03-05')
+  },
+  {
+    id: 'prod_4',
+    sku: 'BP-SCF-004',
+    name: 'Stretch Film Making Machine',
+    slug: 'stretch-film-making-machine',
+    shortDescription: 'High-output Stretch Wrap Film Production',
+    description: 'Our Stretch Film Making Machine produces high-quality stretch wrap films for industrial packaging. Features adjustable thickness control, multi-layer extrusion, and automatic winding system.',
+    categories: ['cat_2'],
+    isActive: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/LT/KF/IY/3682004/stretch-film-making-machine.jpg'],
+    createdAt: new Date('2023-04-20'),
+    updatedAt: new Date('2023-04-20')
+  },
+  {
+    id: 'prod_5',
+    sku: 'BP-BW-005',
+    name: 'Bubble Wrap Roll',
+    slug: 'bubble-wrap-roll',
+    shortDescription: 'Premium Quality Protective Packaging Material',
+    description: 'High-quality bubble wrap rolls for secure packaging. Available in various sizes and bubble dimensions. Excellent cushioning properties for fragile item protection.',
+    categories: ['cat_2'],
+    isActive: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/FD/CE/WQ/3682004/bubble-wrap-roll-500x500.jpg'],
+    createdAt: new Date('2023-05-15'),
+    updatedAt: new Date('2023-05-15')
+  },
+  {
+    id: 'prod_6',
+    sku: 'BP-EPE-006',
+    name: 'EPE Foam Roll',
+    slug: 'epe-foam-roll',
+    shortDescription: 'Expanded Polyethylene Foam for Packaging',
+    description: 'Lightweight EPE foam rolls offering superior protection against shock, vibration, and impact damage. Water-resistant and recyclable material.',
+    categories: ['cat_2'],
+    isActive: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/RE/GO/CW/3682004/epe-foam-roll-500x500.jpg'],
+    createdAt: new Date('2023-06-10'),
+    updatedAt: new Date('2023-06-10')
+  },
+  {
+    id: 'prod_7',
+    sku: 'BP-PCM-007',
+    name: 'Paper Cup Making Machine',
+    slug: 'paper-cup-making-machine',
+    shortDescription: 'High-Speed Disposable Cup Manufacturing',
+    description: 'Automatic paper cup making machine capable of producing 45-50 cups per minute. Features precise sealing system, PLC control, and photocell detection for accurate cup formation.',
+    categories: ['cat_1'],
+    isActive: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XA/WT/HI/3682004/paper-cup-making-machine.jpg'],
+    createdAt: new Date('2023-07-05'),
+    updatedAt: new Date('2023-07-05')
+  },
+  {
+    id: 'prod_8',
+    sku: 'BP-AFM-008',
+    name: 'Air Bubble Film',
+    slug: 'air-bubble-film',
+    shortDescription: 'Protective Packaging Film',
+    description: 'Premium quality air bubble film offering superior protection for fragile items during storage and transportation. Available in various sizes and bubble configurations.',
+    categories: ['cat_2'],
+    isActive: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/BW/DC/OA/3682004/bubble-wrap-pouches-1000x1000.jpg'],
+    createdAt: new Date('2023-08-15'),
+    updatedAt: new Date('2023-08-15')
+  }
+];
+
+// Mock data for variants
+const mockVariants: Record<string, ProductVariant[]> = {
+  'prod_1': [{
+    id: 'var_1',
+    productId: 'prod_1',
+    sku: 'BP-BW-001-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 45000.00,
+    inventoryQuantity: 5,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XT/UJ/AY/3682004/bubble-wrap-pouch-making-machine.jpg'],
+    createdAt: new Date('2023-01-15'),
+    updatedAt: new Date('2023-01-15')
+  }],
+  'prod_2': [{
+    id: 'var_2',
+    productId: 'prod_2',
+    sku: 'BP-APM-002-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 38000.00,
+    inventoryQuantity: 3,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/PB/ME/BQ/3682004/air-bubble-film-making-machine.jpg'],
+    createdAt: new Date('2023-02-10'),
+    updatedAt: new Date('2023-02-10')
+  }],
+  'prod_3': [{
+    id: 'var_3',
+    productId: 'prod_3',
+    sku: 'BP-EPS-003-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 52000.00,
+    inventoryQuantity: 2,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/JX/JO/KD/3682004/eps-thermocol-disposal-glass-making-machine.jpg'],
+    createdAt: new Date('2023-03-05'),
+    updatedAt: new Date('2023-03-05')
+  }],
+  'prod_4': [{
+    id: 'var_4',
+    productId: 'prod_4',
+    sku: 'BP-SCF-004-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 42000.00,
+    inventoryQuantity: 4,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/LT/KF/IY/3682004/stretch-film-making-machine.jpg'],
+    createdAt: new Date('2023-04-20'),
+    updatedAt: new Date('2023-04-20')
+  }],
+  'prod_5': [{
+    id: 'var_5',
+    productId: 'prod_5',
+    sku: 'BP-BW-005-SM',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 250.00,
+    inventoryQuantity: 150,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/FD/CE/WQ/3682004/bubble-wrap-roll-500x500.jpg'],
+    createdAt: new Date('2023-05-15'),
+    updatedAt: new Date('2023-05-15')
+  }],
+  'prod_6': [{
+    id: 'var_6',
+    productId: 'prod_6',
+    sku: 'BP-EPE-006-SM',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 180.00,
+    inventoryQuantity: 200,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/RE/GO/CW/3682004/epe-foam-roll-500x500.jpg'],
+    createdAt: new Date('2023-06-10'),
+    updatedAt: new Date('2023-06-10')
+  }],
+  'prod_7': [{
+    id: 'var_7',
+    productId: 'prod_7',
+    sku: 'BP-PCM-007-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 35000.00,
+    inventoryQuantity: 6,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XA/WT/HI/3682004/paper-cup-making-machine.jpg'],
+    createdAt: new Date('2023-07-05'),
+    updatedAt: new Date('2023-07-05')
+  }],
+  'prod_8': [{
+    id: 'var_8',
+    productId: 'prod_8',
+    sku: 'BP-AFM-008-SM',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 120.00,
+    inventoryQuantity: 300,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/BW/DC/OA/3682004/bubble-wrap-pouches-1000x1000.jpg'],
+    createdAt: new Date('2023-08-15'),
+    updatedAt: new Date('2023-08-15')
+  }]
+};
+
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [variants, setVariants] = useState<Record<string, ProductVariant[]>>({});
@@ -29,18 +261,10 @@ const ProductList: React.FC = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        // Get all products
-        const response = await productApi.getProducts();
-        setProducts(response.data);
         
-        // Get variants for each product
-        const variantsObj: Record<string, ProductVariant[]> = {};
-        for (const product of response.data) {
-          const productVariants = await productApi.getProductVariants(product.id);
-          variantsObj[product.id] = productVariants;
-        }
-        
-        setVariants(variantsObj);
+        // Use mock data instead of API call for now
+        setProducts(benzPackagingProducts);
+        setVariants(mockVariants);
         setError(null);
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -123,9 +347,9 @@ const ProductList: React.FC = () => {
           <Tabs defaultValue="all" value={selectedCategory} onValueChange={setSelectedCategory}>
             <TabsList>
               <TabsTrigger value="all">All Products</TabsTrigger>
-              <TabsTrigger value="cat_1">Electronics</TabsTrigger>
-              <TabsTrigger value="cat_2">Office Supplies</TabsTrigger>
-              <TabsTrigger value="cat_3">Industrial</TabsTrigger>
+              <TabsTrigger value="cat_1">Packaging Machines</TabsTrigger>
+              <TabsTrigger value="cat_2">Packaging Materials</TabsTrigger>
+              <TabsTrigger value="cat_3">Spare Parts</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>

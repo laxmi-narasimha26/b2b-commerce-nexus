@@ -24,7 +24,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant }) => {
     price: 0,
     inventoryQuantity: 0,
     backorderable: false,
-    imageUrls: ['/placeholder.svg'],
+    imageUrls: product.images || ['/placeholder.svg'],
     createdAt: new Date(),
     updatedAt: new Date()
   };
@@ -42,15 +42,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant }) => {
   };
 
   const stockStatus = getStockStatus();
+  
+  // Use product images if available, otherwise fallback to variant images or placeholder
+  const imageUrl = displayVariant.imageUrls?.[0] || product.images?.[0] || '/placeholder.svg';
 
   return (
     <Card className="overflow-hidden h-full flex flex-col">
       <Link to={`/catalog/${product.slug}`} className="flex-grow">
         <div className="aspect-square overflow-hidden bg-gray-100 flex items-center justify-center">
           <img 
-            src={displayVariant.imageUrls?.[0] || '/placeholder.svg'} 
+            src={imageUrl} 
             alt={product.name}
             className="object-cover w-full h-full"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.onerror = null;
+              target.src = '/placeholder.svg';
+            }}
           />
         </div>
         
@@ -70,7 +78,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant }) => {
             <>
               <div className="flex justify-between items-center mb-2">
                 <p className="font-semibold text-lg">
-                  ${displayVariant.price.toFixed(2)}
+                  ₹{displayVariant.price.toLocaleString('en-IN')}
                 </p>
                 <span className={`px-2 py-0.5 rounded-full text-xs ${stockStatus.color}`}>
                   {stockStatus.label}
@@ -90,14 +98,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, variant }) => {
             className="flex-1"
           >
             <BarChart3 className="h-4 w-4 mr-1" />
-            Quote
+            Request Quote
           </Button>
           <Button 
             size="sm" 
             className="flex-1"
           >
             <ShoppingCart className="h-4 w-4 mr-1" />
-            Add
+            Add to Cart
           </Button>
         </div>
       </CardFooter>
