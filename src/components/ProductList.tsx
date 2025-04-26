@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Product, ProductVariant } from '@/types/models';
 import { productApi } from '@/services/api';
@@ -15,246 +14,283 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// Mock data for Benz Packaging Solutions products
+// Updated mock data with complete product catalog
 const benzPackagingProducts: Product[] = [
+  // Packaging Roll Category
   {
-    id: 'prod_1',
-    sku: 'BP-BW-001',
-    name: 'Bubble Wrap Pouch Making Machine',
-    slug: 'bubble-wrap-pouch-making-machine',
-    shortDescription: 'Automatic Bubble Wrap Pouch Making Machine',
-    description: 'Our Bubble Wrap Pouch Making Machine is designed for high-speed production of bubble wrap pouches with precise dimensions. Features adjustable settings for different pouch sizes and automatic sealing.',
-    categories: ['cat_1'],
+    id: 'pr_1',
+    sku: 'BP-VFR-001',
+    name: 'VCI Film Roll',
+    slug: 'vci-film-roll',
+    shortDescription: 'High-quality VCI Film Roll for industrial packaging',
+    description: 'Premium VCI Film Roll designed for corrosion protection and secure packaging. Ideal for industrial use with excellent durability.',
+    categories: ['cat_packaging_roll'],
     isActive: true,
     hasVariants: true,
-    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XT/UJ/AY/3682004/bubble-wrap-pouch-making-machine.jpg'],
-    createdAt: new Date('2023-01-15'),
-    updatedAt: new Date('2023-01-15')
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/YP/VO/GF/3682004/vci-film-roll.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   },
   {
-    id: 'prod_2',
-    sku: 'BP-APM-002',
-    name: 'Air Bubble Film Making Machine',
-    slug: 'air-bubble-film-making-machine',
-    shortDescription: 'Heavy-duty Air Bubble Film Production Equipment',
-    description: 'Industrial-grade Air Bubble Film Making Machine capable of producing bubble wrap sheets in various sizes and bubble configurations. Energy-efficient with digital control system.',
-    categories: ['cat_1'],
+    id: 'pr_2',
+    sku: 'BP-PFR-002',
+    name: 'VCI Polyethylene Film Roll',
+    slug: 'vci-polyethylene-film-roll',
+    shortDescription: 'Durable VCI Polyethylene Film Roll',
+    description: 'High-performance VCI Polyethylene Film Roll offering superior protection and durability for industrial packaging needs.',
+    categories: ['cat_packaging_roll'],
     isActive: true,
     hasVariants: true,
-    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/PB/ME/BQ/3682004/air-bubble-film-making-machine.jpg'],
-    createdAt: new Date('2023-02-10'),
-    updatedAt: new Date('2023-02-10')
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/XC/OJ/TG/3682004/vci-polyethylene-film-roll.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   },
   {
-    id: 'prod_3',
-    sku: 'BP-EPS-003',
-    name: 'EPS Thermocol Disposal Glass Making Machine',
-    slug: 'eps-thermocol-disposal-glass-making-machine',
-    shortDescription: 'Eco-friendly Thermocol Processing Equipment',
-    description: 'This machine converts EPS waste into recyclable products. Features automatic feeding system, precise temperature control, and energy-saving operation.',
-    categories: ['cat_1'],
+    id: 'pr_3',
+    sku: 'BP-PCR-003',
+    name: 'Poly Coated Paper Roll',
+    slug: 'poly-coated-paper-roll',
+    shortDescription: 'Professional Poly Coated Paper Roll',
+    description: 'Premium quality Poly Coated Paper Roll, perfect for packaging applications requiring moisture resistance.',
+    categories: ['cat_packaging_roll'],
     isActive: true,
     hasVariants: true,
-    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/JX/JO/KD/3682004/eps-thermocol-disposal-glass-making-machine.jpg'],
-    createdAt: new Date('2023-03-05'),
-    updatedAt: new Date('2023-03-05')
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/RU/BH/ZL/3682004/poly-coated-paper-roll.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
+  },
+  
+  // VCI Film Category
+  {
+    id: 'vf_1',
+    sku: 'BP-CPF-001',
+    name: 'Corrosion Protection VCI Films',
+    slug: 'corrosion-protection-vci-films',
+    shortDescription: 'Advanced Corrosion Protection Films',
+    description: 'Industrial-grade VCI films specially designed for corrosion protection of metal parts and equipment.',
+    categories: ['cat_vci_film'],
+    isActive: true,
+    hasVariants: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/PP/FX/RB/3682004/corrosion-protection-vci-films.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   },
   {
-    id: 'prod_4',
-    sku: 'BP-SCF-004',
-    name: 'Stretch Film Making Machine',
-    slug: 'stretch-film-making-machine',
-    shortDescription: 'High-output Stretch Wrap Film Production',
-    description: 'Our Stretch Film Making Machine produces high-quality stretch wrap films for industrial packaging. Features adjustable thickness control, multi-layer extrusion, and automatic winding system.',
-    categories: ['cat_2'],
+    id: 'vf_2',
+    sku: 'BP-VPF-002',
+    name: 'VCI Protective Film',
+    slug: 'vci-protective-film',
+    shortDescription: 'Versatile VCI Protection Film',
+    description: 'Multipurpose VCI protective film offering superior corrosion protection for various industrial applications.',
+    categories: ['cat_vci_film'],
     isActive: true,
     hasVariants: true,
-    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/LT/KF/IY/3682004/stretch-film-making-machine.jpg'],
-    createdAt: new Date('2023-04-20'),
-    updatedAt: new Date('2023-04-20')
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/QW/OL/XM/3682004/vci-protective-film.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
+  },
+
+  // Desiccant Bags Category
+  {
+    id: 'db_1',
+    sku: 'BP-MAD-001',
+    name: 'Moisture Absorber Desiccant Bag',
+    slug: 'moisture-absorber-desiccant-bag',
+    shortDescription: 'Professional Moisture Control Solution',
+    description: 'High-performance moisture absorber desiccant bags for effective humidity control in packaging.',
+    categories: ['cat_desiccant'],
+    isActive: true,
+    hasVariants: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/KL/PQ/OG/3682004/moisture-absorber-desiccant-bag.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   },
   {
-    id: 'prod_5',
-    sku: 'BP-BW-005',
-    name: 'Bubble Wrap Roll',
-    slug: 'bubble-wrap-roll',
-    shortDescription: 'Premium Quality Protective Packaging Material',
-    description: 'High-quality bubble wrap rolls for secure packaging. Available in various sizes and bubble dimensions. Excellent cushioning properties for fragile item protection.',
-    categories: ['cat_2'],
+    id: 'db_2',
+    sku: 'BP-PDB-002',
+    name: 'Propsec Desiccant Bags',
+    slug: 'propsec-desiccant-bags',
+    shortDescription: 'Industrial Grade Desiccant Solution',
+    description: 'Professional-grade desiccant bags designed for industrial packaging and moisture protection.',
+    categories: ['cat_desiccant'],
     isActive: true,
     hasVariants: true,
-    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/FD/CE/WQ/3682004/bubble-wrap-roll-500x500.jpg'],
-    createdAt: new Date('2023-05-15'),
-    updatedAt: new Date('2023-05-15')
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/VB/NK/XP/3682004/propsec-desiccant-bags.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
+  },
+
+  // Adhesive Tape Category
+  {
+    id: 'at_1',
+    sku: 'BP-APT-001',
+    name: 'Adhesive Paper Tape',
+    slug: 'adhesive-paper-tape',
+    shortDescription: 'Professional Paper Packaging Tape',
+    description: 'High-quality adhesive paper tape for secure packaging and sealing applications.',
+    categories: ['cat_adhesive'],
+    isActive: true,
+    hasVariants: true,
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/TD/AX/YU/3682004/adhesive-paper-tape.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   },
   {
-    id: 'prod_6',
-    sku: 'BP-EPE-006',
-    name: 'EPE Foam Roll',
-    slug: 'epe-foam-roll',
-    shortDescription: 'Expanded Polyethylene Foam for Packaging',
-    description: 'Lightweight EPE foam rolls offering superior protection against shock, vibration, and impact damage. Water-resistant and recyclable material.',
-    categories: ['cat_2'],
+    id: 'at_2',
+    sku: 'BP-BPT-002',
+    name: 'BOPP Packaging Tape',
+    slug: 'bopp-packaging-tape',
+    shortDescription: 'Premium BOPP Packaging Solution',
+    description: 'Professional-grade BOPP packaging tape for industrial and commercial applications.',
+    categories: ['cat_adhesive'],
     isActive: true,
     hasVariants: true,
-    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/RE/GO/CW/3682004/epe-foam-roll-500x500.jpg'],
-    createdAt: new Date('2023-06-10'),
-    updatedAt: new Date('2023-06-10')
-  },
-  {
-    id: 'prod_7',
-    sku: 'BP-PCM-007',
-    name: 'Paper Cup Making Machine',
-    slug: 'paper-cup-making-machine',
-    shortDescription: 'High-Speed Disposable Cup Manufacturing',
-    description: 'Automatic paper cup making machine capable of producing 45-50 cups per minute. Features precise sealing system, PLC control, and photocell detection for accurate cup formation.',
-    categories: ['cat_1'],
-    isActive: true,
-    hasVariants: true,
-    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XA/WT/HI/3682004/paper-cup-making-machine.jpg'],
-    createdAt: new Date('2023-07-05'),
-    updatedAt: new Date('2023-07-05')
-  },
-  {
-    id: 'prod_8',
-    sku: 'BP-AFM-008',
-    name: 'Air Bubble Film',
-    slug: 'air-bubble-film',
-    shortDescription: 'Protective Packaging Film',
-    description: 'Premium quality air bubble film offering superior protection for fragile items during storage and transportation. Available in various sizes and bubble configurations.',
-    categories: ['cat_2'],
-    isActive: true,
-    hasVariants: true,
-    images: ['https://5.imimg.com/data5/SELLER/Default/2022/9/BW/DC/OA/3682004/bubble-wrap-pouches-1000x1000.jpg'],
-    createdAt: new Date('2023-08-15'),
-    updatedAt: new Date('2023-08-15')
+    images: ['https://5.imimg.com/data5/SELLER/Default/2021/12/JH/WQ/KL/3682004/bopp-packaging-tape.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   }
 ];
 
 // Mock data for variants
 const mockVariants: Record<string, ProductVariant[]> = {
-  'prod_1': [{
-    id: 'var_1',
-    productId: 'prod_1',
-    sku: 'BP-BW-001-STD',
+  'pr_1': [{
+    id: 'var_pr_1',
+    productId: 'pr_1',
+    sku: 'BP-VFR-001-STD',
     position: 1,
     isDefault: true,
     isActive: true,
     optionValues: [],
-    price: 45000.00,
-    inventoryQuantity: 5,
+    price: 150.00,
+    inventoryQuantity: 100,
     backorderable: true,
-    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XT/UJ/AY/3682004/bubble-wrap-pouch-making-machine.jpg'],
-    createdAt: new Date('2023-01-15'),
-    updatedAt: new Date('2023-01-15')
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/YP/VO/GF/3682004/vci-film-roll.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   }],
-  'prod_2': [{
-    id: 'var_2',
-    productId: 'prod_2',
-    sku: 'BP-APM-002-STD',
-    position: 1,
-    isDefault: true,
-    isActive: true,
-    optionValues: [],
-    price: 38000.00,
-    inventoryQuantity: 3,
-    backorderable: true,
-    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/PB/ME/BQ/3682004/air-bubble-film-making-machine.jpg'],
-    createdAt: new Date('2023-02-10'),
-    updatedAt: new Date('2023-02-10')
-  }],
-  'prod_3': [{
-    id: 'var_3',
-    productId: 'prod_3',
-    sku: 'BP-EPS-003-STD',
-    position: 1,
-    isDefault: true,
-    isActive: true,
-    optionValues: [],
-    price: 52000.00,
-    inventoryQuantity: 2,
-    backorderable: true,
-    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/JX/JO/KD/3682004/eps-thermocol-disposal-glass-making-machine.jpg'],
-    createdAt: new Date('2023-03-05'),
-    updatedAt: new Date('2023-03-05')
-  }],
-  'prod_4': [{
-    id: 'var_4',
-    productId: 'prod_4',
-    sku: 'BP-SCF-004-STD',
-    position: 1,
-    isDefault: true,
-    isActive: true,
-    optionValues: [],
-    price: 42000.00,
-    inventoryQuantity: 4,
-    backorderable: true,
-    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/LT/KF/IY/3682004/stretch-film-making-machine.jpg'],
-    createdAt: new Date('2023-04-20'),
-    updatedAt: new Date('2023-04-20')
-  }],
-  'prod_5': [{
-    id: 'var_5',
-    productId: 'prod_5',
-    sku: 'BP-BW-005-SM',
-    position: 1,
-    isDefault: true,
-    isActive: true,
-    optionValues: [],
-    price: 250.00,
-    inventoryQuantity: 150,
-    backorderable: true,
-    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/FD/CE/WQ/3682004/bubble-wrap-roll-500x500.jpg'],
-    createdAt: new Date('2023-05-15'),
-    updatedAt: new Date('2023-05-15')
-  }],
-  'prod_6': [{
-    id: 'var_6',
-    productId: 'prod_6',
-    sku: 'BP-EPE-006-SM',
+  'pr_2': [{
+    id: 'var_pr_2',
+    productId: 'pr_2',
+    sku: 'BP-PFR-002-STD',
     position: 1,
     isDefault: true,
     isActive: true,
     optionValues: [],
     price: 180.00,
+    inventoryQuantity: 120,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/XC/OJ/TG/3682004/vci-polyethylene-film-roll.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
+  }],
+  'pr_3': [{
+    id: 'var_pr_3',
+    productId: 'pr_3',
+    sku: 'BP-PCR-003-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 200.00,
+    inventoryQuantity: 90,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/RU/BH/ZL/3682004/poly-coated-paper-roll.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
+  }],
+  'vf_1': [{
+    id: 'var_vf_1',
+    productId: 'vf_1',
+    sku: 'BP-CPF-001-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 250.00,
+    inventoryQuantity: 75,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/PP/FX/RB/3682004/corrosion-protection-vci-films.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
+  }],
+  'vf_2': [{
+    id: 'var_vf_2',
+    productId: 'vf_2',
+    sku: 'BP-VPF-002-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 220.00,
+    inventoryQuantity: 80,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/QW/OL/XM/3682004/vci-protective-film.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
+  }],
+  'db_1': [{
+    id: 'var_db_1',
+    productId: 'db_1',
+    sku: 'BP-MAD-001-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 50.00,
     inventoryQuantity: 200,
     backorderable: true,
-    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/RE/GO/CW/3682004/epe-foam-roll-500x500.jpg'],
-    createdAt: new Date('2023-06-10'),
-    updatedAt: new Date('2023-06-10')
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/KL/PQ/OG/3682004/moisture-absorber-desiccant-bag.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   }],
-  'prod_7': [{
-    id: 'var_7',
-    productId: 'prod_7',
-    sku: 'BP-PCM-007-STD',
+  'db_2': [{
+    id: 'var_db_2',
+    productId: 'db_2',
+    sku: 'BP-PDB-002-STD',
     position: 1,
     isDefault: true,
     isActive: true,
     optionValues: [],
-    price: 35000.00,
-    inventoryQuantity: 6,
+    price: 60.00,
+    inventoryQuantity: 180,
     backorderable: true,
-    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/XA/WT/HI/3682004/paper-cup-making-machine.jpg'],
-    createdAt: new Date('2023-07-05'),
-    updatedAt: new Date('2023-07-05')
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/VB/NK/XP/3682004/propsec-desiccant-bags.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   }],
-  'prod_8': [{
-    id: 'var_8',
-    productId: 'prod_8',
-    sku: 'BP-AFM-008-SM',
+  'at_1': [{
+    id: 'var_at_1',
+    productId: 'at_1',
+    sku: 'BP-APT-001-STD',
     position: 1,
     isDefault: true,
     isActive: true,
     optionValues: [],
-    price: 120.00,
-    inventoryQuantity: 300,
+    price: 30.00,
+    inventoryQuantity: 250,
     backorderable: true,
-    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2022/9/BW/DC/OA/3682004/bubble-wrap-pouches-1000x1000.jpg'],
-    createdAt: new Date('2023-08-15'),
-    updatedAt: new Date('2023-08-15')
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/TD/AX/YU/3682004/adhesive-paper-tape.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
+  }],
+  'at_2': [{
+    id: 'var_at_2',
+    productId: 'at_2',
+    sku: 'BP-BPT-002-STD',
+    position: 1,
+    isDefault: true,
+    isActive: true,
+    optionValues: [],
+    price: 40.00,
+    inventoryQuantity: 220,
+    backorderable: true,
+    imageUrls: ['https://5.imimg.com/data5/SELLER/Default/2021/12/JH/WQ/KL/3682004/bopp-packaging-tape.jpg'],
+    createdAt: new Date('2024-01-15'),
+    updatedAt: new Date('2024-01-15')
   }]
 };
 
+// Update the category tabs to match the new product categories
 const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [variants, setVariants] = useState<Record<string, ProductVariant[]>>({});
@@ -317,7 +353,6 @@ const ProductList: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Filters and search */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
@@ -350,14 +385,14 @@ const ProductList: React.FC = () => {
           </div>
         </div>
 
-        {/* Category tabs */}
         <div className="mt-4">
           <Tabs defaultValue="all" value={selectedCategory} onValueChange={setSelectedCategory}>
             <TabsList>
               <TabsTrigger value="all">All Products</TabsTrigger>
-              <TabsTrigger value="cat_1">Packaging Machines</TabsTrigger>
-              <TabsTrigger value="cat_2">Packaging Materials</TabsTrigger>
-              <TabsTrigger value="cat_3">Spare Parts</TabsTrigger>
+              <TabsTrigger value="cat_packaging_roll">Packaging Rolls</TabsTrigger>
+              <TabsTrigger value="cat_vci_film">VCI Films</TabsTrigger>
+              <TabsTrigger value="cat_desiccant">Desiccant Bags</TabsTrigger>
+              <TabsTrigger value="cat_adhesive">Adhesive Tapes</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
