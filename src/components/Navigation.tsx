@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Building2, 
   ShoppingCart, 
@@ -12,7 +12,8 @@ import {
   Search,
   Bell,
   User,
-  Menu
+  Menu,
+  LogOut
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -24,9 +25,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Navigation: React.FC = () => {
   const [isMobileNavOpen, setIsMobileNavOpen] = React.useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
+  
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: 'Logged out successfully',
+      description: 'You have been logged out of your account.',
+    });
+    navigate('/login');
+  };
   
   return (
     <div className="bg-white border-b border-gray-200">
@@ -56,9 +71,9 @@ const Navigation: React.FC = () => {
               <Building2 className="h-4 w-4" />
               <span>Organizations</span>
             </Link>
-            <Link to="/quotes" className="text-gray-600 hover:text-nexus-600 flex items-center gap-1">
-              <FileText className="h-4 w-4" />
-              <span>Quotes</span>
+            <Link to="/checkout" className="text-gray-600 hover:text-nexus-600 flex items-center gap-1">
+              <ShoppingCart className="h-4 w-4" />
+              <span>Checkout</span>
             </Link>
           </div>
 
@@ -83,31 +98,55 @@ const Navigation: React.FC = () => {
             </Button>
             
             <div className="ml-3">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative rounded-full">
-                    <User className="h-8 w-8 rounded-full bg-gray-200 p-1" />
+              {isAuthenticated ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative rounded-full">
+                      <div className="flex items-center">
+                        <User className="h-8 w-8 rounded-full bg-gray-200 p-1" />
+                        <span className="ml-2 font-medium">{user?.firstName}</span>
+                      </div>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onSelect={handleLogout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <div className="flex gap-2">
+                  <Button asChild variant="ghost">
+                    <Link to="/login">Sign in</Link>
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Help & Support</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <Button asChild>
+                    <Link to="/signup">Sign up</Link>
+                  </Button>
+                </div>
+              )}
             </div>
             
-            <div className="ml-3">
-              <Link to="/cart">
-                <Button variant="ghost" size="icon">
-                  <ShoppingCart className="h-5 w-5" />
-                </Button>
-              </Link>
-            </div>
+            {isAuthenticated && (
+              <div className="ml-3">
+                <Link to="/checkout">
+                  <Button variant="ghost" size="icon">
+                    <ShoppingCart className="h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -161,37 +200,62 @@ const Navigation: React.FC = () => {
             </Link>
             
             <Link 
-              to="/quotes"
+              to="/checkout"
               className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-nexus-600 hover:bg-gray-50"
               onClick={() => setIsMobileNavOpen(false)}
             >
               <div className="flex items-center">
-                <FileText className="h-5 w-5 mr-2" />
-                Quotes
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Checkout
               </div>
             </Link>
             
             <div className="pt-4 pb-3 border-t border-gray-200">
-              <div className="flex items-center px-5">
-                <div className="flex-shrink-0">
-                  <User className="h-10 w-10 rounded-full bg-gray-200 p-1" />
+              {isAuthenticated ? (
+                <>
+                  <div className="flex items-center px-5">
+                    <div className="flex-shrink-0">
+                      <User className="h-10 w-10 rounded-full bg-gray-200 p-1" />
+                    </div>
+                    <div className="ml-3">
+                      <div className="text-base font-medium text-gray-800">{user?.firstName} {user?.lastName}</div>
+                      <div className="text-sm font-medium text-gray-500">{user?.email}</div>
+                    </div>
+                  </div>
+                  <div className="mt-3 space-y-1">
+                    <a href="#" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                      Profile
+                    </a>
+                    <a href="#" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                      Settings
+                    </a>
+                    <button 
+                      className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-1 px-3">
+                  <Button 
+                    asChild 
+                    className="w-full mb-2"
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    <Link to="/login">Sign in</Link>
+                  </Button>
+                  <Button 
+                    asChild 
+                    variant="outline" 
+                    className="w-full"
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    <Link to="/signup">Sign up</Link>
+                  </Button>
                 </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">Admin User</div>
-                  <div className="text-sm font-medium text-gray-500">admin@example.com</div>
-                </div>
-              </div>
-              <div className="mt-3 space-y-1">
-                <a href="#" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                  Profile
-                </a>
-                <a href="#" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                  Settings
-                </a>
-                <a href="#" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                  Logout
-                </a>
-              </div>
+              )}
             </div>
           </div>
         </div>
