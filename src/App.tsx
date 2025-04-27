@@ -19,7 +19,7 @@ import NotFound from "./pages/NotFound";
 import BusinessRegistration from "./pages/BusinessRegistration";
 import AddProduct from "./pages/AddProduct";
 import AdminDashboard from "./pages/Admin/Dashboard";
-import { Helmet, HelmetProvider } from 'react-helmet';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 
 // Admin route guard
 import ProtectedRoute from "./components/ProtectedRoute";

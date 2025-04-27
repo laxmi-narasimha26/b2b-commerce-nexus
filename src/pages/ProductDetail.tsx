@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navigation from '@/components/Navigation';
@@ -8,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, BarChart3, ArrowLeft } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Helmet } from 'react-helmet';
+import { Helmet as HelmetAsync } from 'react-helmet-async';
 
 const ProductDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -105,10 +104,10 @@ const ProductDetail: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Helmet>
+      <HelmetAsync>
         <title>{product.name} | Benz Packaging Solutions</title>
         <meta name="description" content={product.shortDescription} />
-      </Helmet>
+      </HelmetAsync>
       
       <Navigation />
       

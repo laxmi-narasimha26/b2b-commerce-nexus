@@ -2,7 +2,7 @@
 import React from 'react';
 import Navigation from '@/components/Navigation';
 import ProductList from '@/components/ProductList';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 const Catalog: React.FC = () => {
   return (

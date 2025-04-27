@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
@@ -17,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Building2, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 // Define the form schema
 const formSchema = z.object({
