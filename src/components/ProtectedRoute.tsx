@@ -7,12 +7,14 @@ interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRole?: string | string[];
   redirectPath?: string;
+  renderFunction?: (props: { user: any }) => React.ReactElement;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children,
   requiredRole,
-  redirectPath = '/login'
+  redirectPath = '/login',
+  renderFunction
 }) => {
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
@@ -58,6 +60,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         </div>
       );
     }
+  }
+  
+  // If renderFunction is provided, use it with the user
+  if (renderFunction) {
+    return renderFunction({ user });
   }
   
   // If authenticated and has required role (or no role required), render the children

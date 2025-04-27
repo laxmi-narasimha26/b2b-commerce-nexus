@@ -105,15 +105,13 @@ const App = () => (
               {/* Redirects */}
               <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
               <Route path="/dashboard" element={
-                <ProtectedRoute>
-                  {({ user }) => {
-                    switch(user?.role) {
-                      case 'admin': return <Navigate to="/admin/dashboard" replace />;
-                      case 'business': return <Navigate to="/business/dashboard" replace />;
-                      default: return <Navigate to="/customer/dashboard" replace />;
-                    }
-                  }}
-                </ProtectedRoute>
+                <ProtectedRoute renderFunction={({ user }) => {
+                  switch(user?.role) {
+                    case 'admin': return <Navigate to="/admin/dashboard" replace />;
+                    case 'business': return <Navigate to="/business/dashboard" replace />;
+                    default: return <Navigate to="/customer/dashboard" replace />;
+                  }
+                }} />
               } />
               
               {/* Catch-all */}
