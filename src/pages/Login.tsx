@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
@@ -35,18 +36,19 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user, dashboardURL } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   
-  // Get the return URL from location state or default to home
-  const from = (location.state as any)?.from?.pathname || '/';
+  // Get the return URL from location state or use dashboard URL based on user role
+  const from = (location.state as any)?.from?.pathname || dashboardURL;
 
   // Redirect if already logged in
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(from, { replace: true });
+    if (isAuthenticated && user) {
+      console.log("User already authenticated, redirecting to:", dashboardURL);
+      navigate(dashboardURL, { replace: true });
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, navigate, dashboardURL, user]);
 
   // Initialize form
   const form = useForm<FormValues>({
@@ -69,8 +71,17 @@ const Login: React.FC = () => {
         description: 'Welcome back to Benz Packaging Solutions!',
       });
       
-      // Redirect to the requested page or dashboard
-      navigate(from, { replace: true });
+      // Small timeout to ensure user data is fetched before redirect
+      setTimeout(() => {
+        // Redirect based on user role
+        if (user?.role === 'admin') {
+          navigate('/admin/dashboard', { replace: true });
+        } else if (user?.role === 'business') {
+          navigate('/business/dashboard', { replace: true });
+        } else {
+          navigate('/customer/dashboard', { replace: true });
+        }
+      }, 500);
     } catch (error: any) {
       console.error('Login error:', error);
       toast({

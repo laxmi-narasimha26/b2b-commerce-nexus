@@ -1,7 +1,8 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase, getDashboardRoute } from '@/lib/supabase';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 // Define user types
 interface User {
@@ -23,6 +24,7 @@ interface AuthContextType {
   resetPassword: (email: string) => Promise<void>;
   updateProfile: (data: Partial<User>) => Promise<void>;
   isLoading: boolean;
+  dashboardURL: string;
 }
 
 // Create the context with default values
@@ -35,12 +37,19 @@ const AuthContext = createContext<AuthContextType>({
   resetPassword: async () => {},
   updateProfile: async () => {},
   isLoading: true,
+  dashboardURL: '/',
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [dashboardURL, setDashboardURL] = useState<string>('/');
   const { toast } = useToast();
+  
+  // Update dashboard URL when user role changes
+  useEffect(() => {
+    setDashboardURL(getDashboardRoute(user?.role));
+  }, [user?.role]);
   
   // Check for existing session on mount
   useEffect(() => {
@@ -69,14 +78,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             return;
           }
           
-          setUser({
+          const userData = {
             id: session.user.id,
             email: session.user.email || '',
             firstName: profile.first_name,
             lastName: profile.last_name,
             organizationId: profile.organization_id,
             role: profile.role,
-          });
+          };
+          
+          setUser(userData);
+          console.log("Session restored, user:", userData);
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
@@ -89,6 +101,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Set up subscription to auth changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session?.user?.email);
+      
       if (event === 'SIGNED_IN' && session) {
         // Get user profile from the database
         const { data: profile, error: profileError } = await supabase
@@ -102,16 +116,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
         
-        setUser({
+        const userData = {
           id: session.user.id,
           email: session.user.email || '',
           firstName: profile.first_name,
           lastName: profile.last_name,
           organizationId: profile.organization_id,
           role: profile.role,
-        });
+        };
+        
+        setUser(userData);
+        console.log("User signed in:", userData);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
+        console.log("User signed out");
+      } else if (event === 'TOKEN_REFRESHED') {
+        console.log("Token refreshed");
       }
     });
     
@@ -136,9 +156,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       // User is set via the onAuthStateChange listener
+      return Promise.resolve();
     } catch (error: any) {
       console.error('Login error:', error);
-      throw new Error(error.message || 'Invalid credentials');
+      return Promise.reject(error);
     } finally {
       setIsLoading(false);
     }
@@ -198,7 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           last_name: lastName,
           email,
           organization_id: organizationId,
-          role: organizationName ? 'admin' : 'customer', // If creating an org, they're an admin
+          role: organizationName ? 'business' : 'customer', // If creating an org, they're a business
         });
         
       if (profileError) {
@@ -206,9 +227,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       // User will be set via the onAuthStateChange listener
+      return Promise.resolve();
     } catch (error: any) {
       console.error('Registration error:', error);
-      throw new Error(error.message || 'Registration failed');
+      return Promise.reject(error);
     } finally {
       setIsLoading(false);
     }
@@ -226,6 +248,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       setUser(null);
+      return Promise.resolve();
     } catch (error: any) {
       console.error('Logout error:', error);
       toast({
@@ -233,6 +256,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: 'Logout failed',
         description: error.message || 'An error occurred during logout',
       });
+      return Promise.reject(error);
     } finally {
       setIsLoading(false);
     }
@@ -250,9 +274,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         throw error;
       }
+      return Promise.resolve();
     } catch (error: any) {
       console.error('Password reset error:', error);
-      throw new Error(error.message || 'Password reset failed');
+      return Promise.reject(error);
     } finally {
       setIsLoading(false);
     }
@@ -289,6 +314,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: 'Profile updated',
         description: 'Your profile information has been updated successfully.',
       });
+      return Promise.resolve();
     } catch (error: any) {
       console.error('Profile update error:', error);
       toast({
@@ -296,6 +322,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         title: 'Update failed',
         description: error.message || 'Failed to update profile',
       });
+      return Promise.reject(error);
     } finally {
       setIsLoading(false);
     }
@@ -311,7 +338,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         register,
         resetPassword,
         updateProfile,
-        isLoading 
+        isLoading,
+        dashboardURL
       }}
     >
       {children}

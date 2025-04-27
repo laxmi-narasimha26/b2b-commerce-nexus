@@ -5,12 +5,14 @@ import { useAuth } from '@/context/AuthContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: string;
+  requiredRole?: string | string[];
+  redirectPath?: string;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children,
-  requiredRole
+  requiredRole,
+  redirectPath = '/login'
 }) => {
   const { isAuthenticated, user, isLoading } = useAuth();
   const location = useLocation();
@@ -28,27 +30,34 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   if (!isAuthenticated) {
     // Redirect to login page, but save the current location they were
     // trying to go to so we can send them there after login
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    console.log("Not authenticated, redirecting to login");
+    return <Navigate to={redirectPath} state={{ from: location }} replace />;
   }
   
   // Check for required role if specified
-  if (requiredRole && user?.role !== requiredRole) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md text-center">
-          <h1 className="text-xl font-semibold text-red-800 mb-2">Access Denied</h1>
-          <p className="text-red-600 mb-4">
-            You don't have permission to access this page. This area is restricted to {requiredRole} users only.
-          </p>
-          <button
-            onClick={() => window.history.back()}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          >
-            Go Back
-          </button>
+  if (requiredRole) {
+    const roles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+    const hasRequiredRole = user?.role && roles.includes(user.role);
+    
+    if (!hasRequiredRole) {
+      console.log(`Access denied: User role ${user?.role} doesn't match required roles:`, roles);
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center px-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md text-center">
+            <h1 className="text-xl font-semibold text-red-800 mb-2">Access Denied</h1>
+            <p className="text-red-600 mb-4">
+              You don't have permission to access this page. This area is restricted to {Array.isArray(requiredRole) ? requiredRole.join(' or ') : requiredRole} users only.
+            </p>
+            <button
+              onClick={() => window.history.back()}
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+            >
+              Go Back
+            </button>
+          </div>
         </div>
-      </div>
-    );
+      );
+    }
   }
   
   // If authenticated and has required role (or no role required), render the children

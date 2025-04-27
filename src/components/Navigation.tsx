@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Building2, 
   ShoppingCart, 
@@ -13,7 +13,9 @@ import {
   Bell,
   User,
   Menu,
-  LogOut
+  LogOut,
+  Home,
+  LayoutDashboard
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -29,19 +31,75 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 const Navigation: React.FC = () => {
-  const [isMobileNavOpen, setIsMobileNavOpen] = React.useState(false);
-  const { user, isAuthenticated, logout } = useAuth();
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+  const { user, isAuthenticated, logout, dashboardURL } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   
-  const handleLogout = () => {
-    logout();
-    toast({
-      title: 'Logged out successfully',
-      description: 'You have been logged out of your account.',
-    });
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast({
+        title: 'Logged out successfully',
+        description: 'You have been logged out of your account.',
+      });
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
+  
+  // Get navigation links based on user role
+  const getNavigationLinks = () => {
+    const commonLinks = [
+      {
+        to: '/catalog',
+        label: 'Catalog',
+        icon: Package,
+      },
+      {
+        to: '/orders',
+        label: 'Orders',
+        icon: FileText,
+      }
+    ];
+    
+    if (!user?.role || user.role === 'customer') {
+      return commonLinks;
+    }
+    
+    if (user.role === 'business') {
+      return [
+        ...commonLinks,
+        {
+          to: '/organizations',
+          label: 'Organization',
+          icon: Building2,
+        }
+      ];
+    }
+    
+    if (user.role === 'admin') {
+      return [
+        ...commonLinks,
+        {
+          to: '/organizations',
+          label: 'Organizations',
+          icon: Building2,
+        },
+        {
+          to: '/admin/dashboard',
+          label: 'Admin',
+          icon: LayoutDashboard,
+        }
+      ];
+    }
+    
+    return commonLinks;
+  };
+  
+  const navigationLinks = getNavigationLinks();
   
   return (
     <div className="bg-white border-b border-gray-200">
@@ -53,28 +111,33 @@ const Navigation: React.FC = () => {
               <div className="text-nexus-600 bg-nexus-100 p-1 rounded">
                 <Building2 className="h-8 w-8" />
               </div>
-              <span className="ml-2 text-xl font-semibold text-gray-900">B2B Commerce Nexus</span>
+              <span className="ml-2 text-xl font-semibold text-gray-900">Benz Packaging</span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8">
-            <Link to="/catalog" className="text-gray-600 hover:text-nexus-600 flex items-center gap-1">
-              <Package className="h-4 w-4" />
-              <span>Catalog</span>
-            </Link>
-            <Link to="/orders" className="text-gray-600 hover:text-nexus-600 flex items-center gap-1">
-              <FileText className="h-4 w-4" />
-              <span>Orders</span>
-            </Link>
-            <Link to="/organizations" className="text-gray-600 hover:text-nexus-600 flex items-center gap-1">
-              <Building2 className="h-4 w-4" />
-              <span>Organizations</span>
-            </Link>
-            <Link to="/checkout" className="text-gray-600 hover:text-nexus-600 flex items-center gap-1">
-              <ShoppingCart className="h-4 w-4" />
-              <span>Checkout</span>
-            </Link>
+            {navigationLinks.map((link) => (
+              <Link 
+                key={link.to} 
+                to={link.to} 
+                className={`text-gray-600 hover:text-nexus-600 flex items-center gap-1 ${
+                  location.pathname === link.to ? 'text-nexus-600 font-medium' : ''
+                }`}
+              >
+                <link.icon className="h-4 w-4" />
+                <span>{link.label}</span>
+              </Link>
+            ))}
+            
+            {isAuthenticated && (
+              <Link to={dashboardURL} className={`text-gray-600 hover:text-nexus-600 flex items-center gap-1 ${
+                location.pathname.includes('/dashboard') ? 'text-nexus-600 font-medium' : ''
+              }`}>
+                <LayoutDashboard className="h-4 w-4" />
+                <span>Dashboard</span>
+              </Link>
+            )}
           </div>
 
           {/* Search bar - desktop */}
@@ -86,16 +149,18 @@ const Navigation: React.FC = () => {
               <input 
                 type="search" 
                 className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-nexus-500 focus:border-nexus-500"
-                placeholder="Search products, organizations, orders..."
+                placeholder="Search products, orders..."
               />
             </div>
           </div>
 
           {/* Right side navigation */}
           <div className="hidden md:flex items-center">
-            <Button variant="ghost" size="icon" className="mr-2">
-              <Bell className="h-5 w-5" />
-            </Button>
+            {isAuthenticated && (
+              <Button variant="ghost" size="icon" className="mr-2">
+                <Bell className="h-5 w-5" />
+              </Button>
+            )}
             
             <div className="ml-3">
               {isAuthenticated ? (
@@ -111,6 +176,12 @@ const Navigation: React.FC = () => {
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel>My Account</DropdownMenuLabel>
                     <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to={dashboardURL} className="flex w-full cursor-pointer">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuItem>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
@@ -151,6 +222,13 @@ const Navigation: React.FC = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
+            {isAuthenticated && (
+              <Link to="/checkout" className="mr-2">
+                <Button variant="ghost" size="icon">
+                  <ShoppingCart className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
             <Button 
               variant="ghost" 
               size="icon" 
@@ -166,97 +244,91 @@ const Navigation: React.FC = () => {
       {isMobileNavOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            <Link 
-              to="/catalog"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-nexus-600 hover:bg-gray-50"
-              onClick={() => setIsMobileNavOpen(false)}
-            >
-              <div className="flex items-center">
-                <Package className="h-5 w-5 mr-2" />
-                Catalog
-              </div>
-            </Link>
-            
-            <Link 
-              to="/orders"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-nexus-600 hover:bg-gray-50"
-              onClick={() => setIsMobileNavOpen(false)}
-            >
-              <div className="flex items-center">
-                <FileText className="h-5 w-5 mr-2" />
-                Orders
-              </div>
-            </Link>
-            
-            <Link 
-              to="/organizations"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-nexus-600 hover:bg-gray-50"
-              onClick={() => setIsMobileNavOpen(false)}
-            >
-              <div className="flex items-center">
-                <Building2 className="h-5 w-5 mr-2" />
-                Organizations
-              </div>
-            </Link>
-            
-            <Link 
-              to="/checkout"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-nexus-600 hover:bg-gray-50"
-              onClick={() => setIsMobileNavOpen(false)}
-            >
-              <div className="flex items-center">
-                <ShoppingCart className="h-5 w-5 mr-2" />
-                Checkout
-              </div>
-            </Link>
-            
-            <div className="pt-4 pb-3 border-t border-gray-200">
-              {isAuthenticated ? (
-                <>
-                  <div className="flex items-center px-5">
-                    <div className="flex-shrink-0">
-                      <User className="h-10 w-10 rounded-full bg-gray-200 p-1" />
-                    </div>
-                    <div className="ml-3">
-                      <div className="text-base font-medium text-gray-800">{user?.firstName} {user?.lastName}</div>
-                      <div className="text-sm font-medium text-gray-500">{user?.email}</div>
-                    </div>
-                  </div>
-                  <div className="mt-3 space-y-1">
-                    <a href="#" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                      Profile
-                    </a>
-                    <a href="#" className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                      Settings
-                    </a>
-                    <button 
-                      className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
-                      onClick={handleLogout}
-                    >
-                      Logout
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <div className="space-y-1 px-3">
-                  <Button 
-                    asChild 
-                    className="w-full mb-2"
-                    onClick={() => setIsMobileNavOpen(false)}
-                  >
-                    <Link to="/login">Sign in</Link>
-                  </Button>
-                  <Button 
-                    asChild 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => setIsMobileNavOpen(false)}
-                  >
-                    <Link to="/signup">Sign up</Link>
-                  </Button>
+            {navigationLinks.map((link) => (
+              <Link 
+                key={link.to}
+                to={link.to}
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-nexus-600 hover:bg-gray-50"
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <div className="flex items-center">
+                  <link.icon className="h-5 w-5 mr-2" />
+                  {link.label}
                 </div>
-              )}
-            </div>
+              </Link>
+            ))}
+            
+            {isAuthenticated && (
+              <Link 
+                to={dashboardURL}
+                className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:text-nexus-600 hover:bg-gray-50"
+                onClick={() => setIsMobileNavOpen(false)}
+              >
+                <div className="flex items-center">
+                  <LayoutDashboard className="h-5 w-5 mr-2" />
+                  Dashboard
+                </div>
+              </Link>
+            )}
+          </div>
+          
+          <div className="pt-4 pb-3 border-t border-gray-200">
+            {isAuthenticated ? (
+              <>
+                <div className="flex items-center px-5">
+                  <div className="flex-shrink-0">
+                    <User className="h-10 w-10 rounded-full bg-gray-200 p-1" />
+                  </div>
+                  <div className="ml-3">
+                    <div className="text-base font-medium text-gray-800">{user?.firstName} {user?.lastName}</div>
+                    <div className="text-sm font-medium text-gray-500">{user?.email}</div>
+                  </div>
+                </div>
+                <div className="mt-3 space-y-1">
+                  <Link 
+                    to="/profile" 
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    Profile
+                  </Link>
+                  <Link 
+                    to="/settings" 
+                    className="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    onClick={() => setIsMobileNavOpen(false)}
+                  >
+                    Settings
+                  </Link>
+                  <button 
+                    className="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileNavOpen(false);
+                    }}
+                  >
+                    Logout
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="space-y-1 px-3">
+                <Button 
+                  asChild 
+                  className="w-full mb-2"
+                  onClick={() => setIsMobileNavOpen(false)}
+                >
+                  <Link to="/login">Sign in</Link>
+                </Button>
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => setIsMobileNavOpen(false)}
+                >
+                  <Link to="/signup">Sign up</Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}

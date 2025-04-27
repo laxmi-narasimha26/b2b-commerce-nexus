@@ -5,6 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+
+// Pages
 import Index from "./pages/Index";
 import Catalog from "./pages/Catalog";
 import ProductDetail from "./pages/ProductDetail";
@@ -18,8 +21,12 @@ import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import BusinessRegistration from "./pages/BusinessRegistration";
 import AddProduct from "./pages/AddProduct";
+import Support from "./pages/Support";
+
+// Role-specific dashboards
 import AdminDashboard from "./pages/Admin/Dashboard";
-import { Helmet, HelmetProvider } from 'react-helmet-async';
+import BusinessDashboard from "./pages/Business/Dashboard";
+import CustomerDashboard from "./pages/Customer/Dashboard";
 
 // Admin route guard
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -46,8 +53,9 @@ const App = () => (
               <Route path="/signup" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/business/register" element={<BusinessRegistration />} />
+              <Route path="/support" element={<Support />} />
               
-              {/* Authenticated User Routes */}
+              {/* Authenticated User Routes - All users */}
               <Route path="/orders" element={
                 <ProtectedRoute>
                   <Orders />
@@ -69,6 +77,19 @@ const App = () => (
                 </ProtectedRoute>
               } />
               
+              {/* Role-specific dashboards */}
+              <Route path="/customer/dashboard" element={
+                <ProtectedRoute requiredRole="customer">
+                  <CustomerDashboard />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/business/dashboard" element={
+                <ProtectedRoute requiredRole="business">
+                  <BusinessDashboard />
+                </ProtectedRoute>
+              } />
+              
               {/* Admin Routes */}
               <Route path="/admin/dashboard" element={
                 <ProtectedRoute requiredRole="admin">
@@ -83,6 +104,17 @@ const App = () => (
               
               {/* Redirects */}
               <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  {({ user }) => {
+                    switch(user?.role) {
+                      case 'admin': return <Navigate to="/admin/dashboard" replace />;
+                      case 'business': return <Navigate to="/business/dashboard" replace />;
+                      default: return <Navigate to="/customer/dashboard" replace />;
+                    }
+                  }}
+                </ProtectedRoute>
+              } />
               
               {/* Catch-all */}
               <Route path="*" element={<NotFound />} />

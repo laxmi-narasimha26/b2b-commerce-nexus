@@ -11,4 +11,22 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Create a single supabase client for the entire app
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+  }
+});
+
+// Helper function to get role-specific dashboard route
+export const getDashboardRoute = (role?: string) => {
+  switch(role) {
+    case 'admin': 
+      return '/admin/dashboard';
+    case 'business':
+      return '/business/dashboard';
+    default: 
+      return '/customer/dashboard';
+  }
+};
