@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Building2, LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/context/AuthContext';
+import { Helmet } from 'react-helmet';
 
 // Define the form schema
 const formSchema = z.object({
@@ -33,9 +34,20 @@ type FormValues = z.infer<typeof formSchema>;
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Get the return URL from location state or default to home
+  const from = (location.state as any)?.from?.pathname || '/';
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, from]);
 
   // Initialize form
   const form = useForm<FormValues>({
@@ -55,17 +67,17 @@ const Login: React.FC = () => {
       
       toast({
         title: 'Login successful',
-        description: 'Welcome back to B2B Commerce Nexus!',
+        description: 'Welcome back to Benz Packaging Solutions!',
       });
       
-      // Redirect to dashboard
-      navigate('/');
-    } catch (error) {
+      // Redirect to the requested page or dashboard
+      navigate(from, { replace: true });
+    } catch (error: any) {
       console.error('Login error:', error);
       toast({
         variant: 'destructive',
         title: 'Login failed',
-        description: 'Invalid email or password. Please try again.',
+        description: error.message || 'Invalid email or password. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -74,6 +86,10 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
+      <Helmet>
+        <title>Login | Benz Packaging Solutions</title>
+      </Helmet>
+      
       <div className="w-full max-w-md">
         {/* Logo and app name */}
         <div className="text-center mb-8">
@@ -82,7 +98,7 @@ const Login: React.FC = () => {
               <Building2 className="h-10 w-10" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold mt-4">B2B Commerce Nexus</h1>
+          <h1 className="text-2xl font-bold mt-4">Benz Packaging Solutions</h1>
           <p className="text-gray-600 mt-2">Sign in to your account</p>
         </div>
 

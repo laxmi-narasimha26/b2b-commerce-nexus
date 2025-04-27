@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -18,6 +18,9 @@ import { Input } from '@/components/ui/input';
 import { Building2, UserPlus } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/context/AuthContext';
+import { Helmet } from 'react-helmet';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 // Define the form schema
 const formSchema = z.object({
@@ -31,9 +34,15 @@ const formSchema = z.object({
     .string()
     .min(1, { message: 'Email is required' })
     .email({ message: 'Invalid email address' }),
+  accountType: z
+    .enum(['customer', 'business'])
+    .default('customer'),
   companyName: z
     .string()
-    .min(1, { message: 'Company name is required' }),
+    .optional()
+    .refine(val => (val === undefined || val === '' || val?.length >= 3), { 
+      message: 'Company name must be at least 3 characters',
+    }),
   phone: z
     .string()
     .optional(),
@@ -49,6 +58,15 @@ const formSchema = z.object({
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
+}).refine(data => {
+  // If accountType is business, companyName is required
+  if (data.accountType === 'business') {
+    return !!data.companyName;
+  }
+  return true;
+}, {
+  message: "Company name is required for business accounts",
+  path: ['companyName'],
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -56,7 +74,15 @@ type FormValues = z.infer<typeof formSchema>;
 const Signup: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { register, isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   // Initialize form
   const form = useForm<FormValues>({
@@ -65,6 +91,7 @@ const Signup: React.FC = () => {
       firstName: '',
       lastName: '',
       email: '',
+      accountType: 'customer',
       companyName: '',
       phone: '',
       password: '',
@@ -73,31 +100,36 @@ const Signup: React.FC = () => {
     },
   });
 
+  // Watch accountType to conditionally render fields
+  const accountType = form.watch('accountType');
+
   // Handle form submission
   const onSubmit = async (values: FormValues) => {
     setIsLoading(true);
     
     try {
-      // In a real application, this would be an actual API call
-      console.log('Signup attempt with:', values);
+      // Call the register function from auth context
+      await register(
+        values.firstName,
+        values.lastName,
+        values.email,
+        values.password,
+        values.accountType === 'business' ? values.companyName : undefined
+      );
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate successful signup
       toast({
         title: 'Account created successfully',
-        description: 'Welcome to B2B Commerce Nexus!',
+        description: 'Welcome to Benz Packaging Solutions!',
       });
       
       // Redirect to login
       navigate('/login');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Signup error:', error);
       toast({
         variant: 'destructive',
         title: 'Signup failed',
-        description: 'There was a problem creating your account. Please try again.',
+        description: error.message || 'There was a problem creating your account. Please try again.',
       });
     } finally {
       setIsLoading(false);
@@ -106,6 +138,10 @@ const Signup: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4 py-12">
+      <Helmet>
+        <title>Sign Up | Benz Packaging Solutions</title>
+      </Helmet>
+      
       <div className="w-full max-w-md">
         {/* Logo and app name */}
         <div className="text-center mb-8">
@@ -114,7 +150,7 @@ const Signup: React.FC = () => {
               <Building2 className="h-10 w-10" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold mt-4">B2B Commerce Nexus</h1>
+          <h1 className="text-2xl font-bold mt-4">Benz Packaging Solutions</h1>
           <p className="text-gray-600 mt-2">Create your account</p>
         </div>
 
@@ -122,6 +158,37 @@ const Signup: React.FC = () => {
         <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-200">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="accountType"
+                render={({ field }) => (
+                  <FormItem className="space-y-3">
+                    <FormLabel>Account Type</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex space-x-4"
+                      >
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="customer" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Individual Customer</FormLabel>
+                        </FormItem>
+                        <FormItem className="flex items-center space-x-2 space-y-0">
+                          <FormControl>
+                            <RadioGroupItem value="business" />
+                          </FormControl>
+                          <FormLabel className="font-normal">Business</FormLabel>
+                        </FormItem>
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -157,28 +224,30 @@ const Signup: React.FC = () => {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Business Email</FormLabel>
+                    <FormLabel>Email Address</FormLabel>
                     <FormControl>
-                      <Input placeholder="you@yourcompany.com" type="email" {...field} />
+                      <Input placeholder="you@example.com" type="email" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="companyName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Company Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Company, Inc." {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {accountType === 'business' && (
+                <FormField
+                  control={form.control}
+                  name="companyName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Company Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Company, Inc." {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}
